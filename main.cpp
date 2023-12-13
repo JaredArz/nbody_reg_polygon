@@ -3,13 +3,14 @@
 #include <cmath>
 #include <vector>
 #include "point.h"
+#include "timer.h"
 
 #define SCREEN_WIDTH  601
 #define SCREEN_HEIGHT 601
-#define dt 1
 #define PI 3.14159265358979323846264
 
 using std::vector;
+double dt = 1;
 SDL_Window *window = nullptr;
 SDL_Renderer *renderer = nullptr;
 
@@ -122,8 +123,9 @@ int main( int argc, char* args[] ){
         return 0;
 	}
     SDL_Event event;
+    SDL_Timer timer;
     bool exit_flag = false;
-    double v = 0.001;
+    double v = 0.1;
     vector<point> points;
 
 
@@ -144,6 +146,8 @@ int main( int argc, char* args[] ){
         }
         SDL_RenderClear( renderer );
 
+        timer.update();
+        dt = timer.get_dt();
         update_position(&points);
         update_velocity(v, &points[0], &points[1]);
         update_velocity(v, &points[1], &points[2]);
