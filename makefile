@@ -29,6 +29,7 @@ $(BINARY): main.o
 main.o: main.cpp
 	$(CC) -c $(CFLAGS) $?
 
-clean: rm -f $(BINARY) main.o
+clean:
+	rm -f main.o $(BINARY)
 
 .PHONY: all clean

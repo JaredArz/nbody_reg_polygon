@@ -1,7 +1,7 @@
 #include <SDL2/SDL.h>
 #include <iostream>
-#include <string>
 #include <cmath>
+#include "point.h"
 
 #define SCREEN_WIDTH  600
 #define SCREEN_HEIGHT 600
@@ -51,9 +51,13 @@ int main( int argc, char* args[] ){
         std::cout << "Failed to initialize!\n";
         return 0;
 	}
-
     SDL_Event event;
     bool exit_flag = false;
+
+    point p;
+    p.set_pos(1,1);
+    p.set_vel(1,1);
+
     while( !exit_flag ){
         while( SDL_PollEvent( &event ) != 0 ){
             if( event.type == SDL_QUIT ){ exit_flag = true; }
