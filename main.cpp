@@ -4,8 +4,9 @@
 #include <vector>
 #include "point.h"
 
-#define SCREEN_WIDTH  600
-#define SCREEN_HEIGHT 600
+#define SCREEN_WIDTH  601
+#define SCREEN_HEIGHT 601
+#define dt 1
 #define PI 3.14159265358979323846264
 
 using std::vector;
@@ -54,9 +55,20 @@ int SDL_RenderDrawDot(SDL_Renderer *renderer, int x, int y, int radius){
 }
 
 int update_position(vector<point> *points){
-    for (vector<point>::iterator it = points->begin(); it < points->end(); it++)
-        it->x += 3;
+    for (vector<point>::iterator it = points->begin(); it < points->end(); it++){
+        it->x += it->vx * dt;
+        it->y += it->vy * dt;
+    }
     return 0;
+}
+
+void update_velocity(double v, point *current, point *next){
+    double d_x = next->x - current->x;
+    double d_y = next->y - current->y;
+    double dist = sqrt((next->x - current->x)*(next->x - current->x) +
+                      (current->y - next->y)*(current->y - next->y));
+    current->vx = v * (d_x / dist*SCREEN_WIDTH);
+    current->vy = v * (d_y / dist*SCREEN_WIDTH);
 }
 
 int draw_points(SDL_Renderer *renderer, vector<point> *points){
@@ -85,7 +97,7 @@ bool init(){
         return false;
     }
     
-    if( (renderer = SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED )) == nullptr ){
+    if( (renderer = SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC )) == nullptr ){
         std::cout << "Renderer could not be created! SDL Error: " << SDL_GetError() << std::endl;
         return false;
     }
@@ -111,11 +123,20 @@ int main( int argc, char* args[] ){
 	}
     SDL_Event event;
     bool exit_flag = false;
+    double v = 0.001;
     vector<point> points;
 
-    point A;
-    A.set_pos(100,200);
+
+    point A,B,C;
+    A.set_pos(300,100);
+    B.set_pos(100,400);
+    C.set_pos(500,400);
+    A.set_vel(-1*v/2, sqrt(3)*v/2);
+    B.set_vel(v,0);
+    C.set_vel(-1*v/2, -1*v/sqrt(2));
     points.push_back(A);
+    points.push_back(B);
+    points.push_back(C);
 
     while( !exit_flag ){
         while( SDL_PollEvent( &event ) != 0 ){
@@ -124,10 +145,12 @@ int main( int argc, char* args[] ){
         SDL_RenderClear( renderer );
 
         update_position(&points);
+        update_velocity(v, &points[0], &points[1]);
+        update_velocity(v, &points[1], &points[2]);
+        update_velocity(v, &points[2], &points[0]);
         draw_points(renderer, &points);
 
         SDL_RenderPresent( renderer );
-        SDL_Delay(150);
     }
 
     exit();
