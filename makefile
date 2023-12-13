@@ -4,7 +4,7 @@
 #g++ ./main_test.cpp -lSDL -o bin
 
 CFLAGS    = -O2 -Wall
-BINARY    = nbodyngon
+BINARY    = bin
 CROSSCOMPILE = no
 EXTLIBS =
 
