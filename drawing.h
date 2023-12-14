@@ -1,7 +1,7 @@
 #ifndef drawing_guard
 #define drawing_guard
 
-int SDL_RenderDrawDot(SDL_Renderer *renderer, int x, int y, int radius){
+static int SDL_RenderDrawDot(SDL_Renderer *renderer, int x, int y, int radius){
     int offsetx, offsety, d;
     int status;
 

@@ -2,10 +2,10 @@
 #include <cassert>
 #include <iostream>
 
+#include "manager.h"
 #include "timer.h"
 #include "point.h"
 #include "drawing.h"
-#include "manager.h"
 
 #define SCREEN_WIDTH  601
 #define SCREEN_HEIGHT 601
@@ -71,7 +71,7 @@ void Manager::add_point(Point p){
 }
 
 void Manager::draw_points(void){
-    if (!SDL_flag)
+    if (!this->SDL_flag)
         return;
 
     SDL_SetRenderDrawColor(this->renderer, POINT_R, POINT_G, POINT_B, POINT_A);
@@ -93,14 +93,14 @@ void Manager::update_positions(void){
 }
 
 void Manager::update_renderer(void){
-    if (!SDL_flag)
+    if (!this->SDL_flag)
         return;
     SDL_RenderPresent(this->renderer);
     return;
 }
 
 void Manager::clear_renderer(void){
-    if (!SDL_flag)
+    if (!this->SDL_flag)
         return;
     SDL_RenderClear(this->renderer);
     return;

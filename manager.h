@@ -5,22 +5,25 @@
 #include "timer.h"
 #include "point.h"
 
+#define MAX_POINTS 1000
+
 class Manager{
     public:
+        void init_SDL(void);
+
+        void kill_SDL(void);
+
         Manager(void){
             this->window   = nullptr;
             this->renderer = nullptr;
             this->SDL_flag = 0;
+            this->max_points = MAX_POINTS;
         }
 
         ~Manager(void){
             if (this->SDL_flag)
                 this->kill_SDL();
         }
-
-        void init_SDL(void);
-
-        void kill_SDL(void);
 
         void add_point(Point p);
 
@@ -47,7 +50,7 @@ class Manager{
         SDL_Window *window;
         SDL_Timer timer;
         int SDL_flag; //0: Disabled, 1: Enabled, 2: Internal error
-        unsigned int max_points = 1000;
+        unsigned int max_points;
         std::vector<Point> points;
         typedef std::vector<Point>::iterator iter;
 };
