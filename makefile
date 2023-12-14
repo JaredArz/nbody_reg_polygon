@@ -3,33 +3,36 @@
 #x86_64-w64-mingw32-gcc -o main64.exe main.c
 #g++ ./main_test.cpp -lSDL -o bin
 
-CFLAGS    = -O2 -Wall
-BINARY    = bin
+CFLAGS  = -O2 -Wall
+EXTLIBS = -lSDL2main -lSDL2# -lSDL2_ttf
+BINARY  = bin
+
+SRCS = $(shell ls *.cpp)
+OBJS = $(SRCS:.cpp=.o)
+
 CROSSCOMPILE = no
-EXTLIBS =
 
 ### call with make all CROSSCOMPILE=yes to cross compile
 ### otherwise, assumes a *nix enviornment (tested on OSX and Arch Linux) 
+### FIXME: DEPRECATED FOR MINGW BUILD
 ifeq ($(CROSSCOMPILE), yes)
 	CC = x86_64-w64-mingw32-gcc
 	X = .exe
-    EXTLIBS += -lmingw32
+    EXTLIBS = -lmingw32 $(EXTLIBS) 
 else
-	CC = g++
-	X  =  
+	CC = g++ --std=c++11
+	X  = 
 endif
-
-EXTLIBS += -lSDL2main -lSDL2# -lSDL2_ttf
 
 all: $(BINARY)
 
-$(BINARY): main.o
+$(BINARY): $(OBJS)
 	$(CC) $? $(EXTLIBS) -o $(@)$(X)
 
-main.o: main.cpp
+$(OBJS): $(SRCS)
 	$(CC) -c $(CFLAGS) $?
 
 clean:
-	rm -f main.o $(BINARY)
+	rm -f $(OBJS) $(BINARY)
 
 .PHONY: all clean
