@@ -3,139 +3,94 @@
 #include <cmath>
 #include <vector>
 #include "point.h"
+#include "useful_functions.h"
 #include "timer.h"
 
 #define SCREEN_WIDTH  601
 #define SCREEN_HEIGHT 601
 #define PI 3.14159265358979323846264
 
-using std::vector;
-double dt = 1;
-SDL_Window *window = nullptr;
-SDL_Renderer *renderer = nullptr;
 
-int SDL_RenderDrawDot(SDL_Renderer *renderer, int x, int y, int radius){
-    int offsetx, offsety, d;
-    int status;
-
-    offsetx = 0;
-    offsety = radius;
-    d = radius -1;
-    status = 0;
-
-    while (offsety >= offsetx) {
-        status += SDL_RenderDrawLine(renderer, x - offsety, y + offsetx,
-                                     x + offsety, y + offsetx);
-        status += SDL_RenderDrawLine(renderer, x - offsetx, y + offsety,
-                                     x + offsetx, y + offsety);
-        status += SDL_RenderDrawLine(renderer, x - offsetx, y - offsety,
-                                     x + offsetx, y - offsety);
-        status += SDL_RenderDrawLine(renderer, x - offsety, y - offsetx,
-                                     x + offsety, y - offsetx);
-        if (status < 0) {
-            status = -1;
-            break;
-        }
-
-        if (d >= 2*offsetx) {
-            d -= 2*offsetx + 1;
-            offsetx +=1;
-        }
-        else if (d < 2 * (radius - offsety)) {
-            d += 2 * offsety - 1;
-            offsety -= 1;
-        }
-        else {
-            d += 2 * (offsety - offsetx - 1);
-            offsety -= 1;
-            offsetx += 1;
-        }
-    }
-
-    return status;
+void update_positions(std::vector<point> *points, double dt){
+    for (std::vector<point>::iterator it = points->begin(); it < points->end(); it++)
+        it->update_pos(dt);
 }
 
-int update_position(vector<point> *points){
-    for (vector<point>::iterator it = points->begin(); it < points->end(); it++){
-        it->x += it->vx * dt;
-        it->y += it->vy * dt;
-    }
-    return 0;
-}
-
-void update_velocity(double v, point *current, point *next){
-    double d_x = next->x - current->x;
-    double d_y = next->y - current->y;
-    double dist = sqrt((next->x - current->x)*(next->x - current->x) +
+void update_vhats(point *current, point *next){
+    double r_x = next->x - current->x;
+    double r_y = next->y - current->y;
+    double distance = sqrt((next->x - current->x)*(next->x - current->x) +
                       (current->y - next->y)*(current->y - next->y));
-    current->vx = v * (d_x / dist*SCREEN_WIDTH);
-    current->vy = v * (d_y / dist*SCREEN_WIDTH);
+    current->vhat_x = r_x / distance;
+    current->vhat_y = r_y / distance;
 }
 
-int draw_points(SDL_Renderer *renderer, vector<point> *points){
+int draw_points(SDL_Renderer *renderer, std::vector<point> *points){
     SDL_SetRenderDrawColor(renderer, 0, 0, 255, 0);
-    for (vector<point>::iterator it = points->begin(); it < points->end(); it++){
+
+    for (std::vector<point>::iterator it = points->begin(); it < points->end(); it++)
         SDL_RenderDrawDot(renderer, it->x, it->y, 4);
-    }
+
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
     return 0;
 }
 
-bool init(){
+bool init(SDL_Renderer **renderer, SDL_Window **window){
 	if( SDL_Init( SDL_INIT_VIDEO ) < 0 ){
         std::cout << "SDL could not initialize! SDL Error: " << SDL_GetError() << std::endl;
         return false;
     }
+
     //Set texture filtering to linear
-    if( !SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "linear" ) )
+    if( !SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "linear" ) ){
         std::cout << "Warning: Linear texture filtering not enabled!\n";
+    }
 
-    SDL_RenderSetLogicalSize(renderer,SCREEN_WIDTH,SCREEN_HEIGHT);
-
-    if( (window = SDL_CreateWindow( "bottom text", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+    if( (*window = SDL_CreateWindow( "bottom text", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                   SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN )) == nullptr ){
         std::cout << "Window could not be created! SDL Error: " << SDL_GetError() << std::endl;
         return false;
     }
-    
-    if( (renderer = SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC )) == nullptr ){
+
+    if( (*renderer = SDL_CreateRenderer( *window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC )) == nullptr ){
         std::cout << "Renderer could not be created! SDL Error: " << SDL_GetError() << std::endl;
         return false;
     }
 
-    SDL_SetRenderDrawColor(renderer,0,0,0,0);
+    SDL_RenderSetLogicalSize(*renderer,SCREEN_WIDTH,SCREEN_HEIGHT);
+    SDL_SetRenderDrawColor(*renderer,0,0,0,0);
 
 	return true;
 }
 
-void exit(){
-	SDL_DestroyRenderer( renderer );
-	SDL_DestroyWindow( window );
-	window   = nullptr;
-	renderer = nullptr;
+void exit(SDL_Renderer **renderer, SDL_Window **window){
+	SDL_DestroyRenderer( *renderer );
+	SDL_DestroyWindow( *window );
+	*window   = nullptr;
+	*renderer = nullptr;
 	//Quit SDL subsystems
 	SDL_Quit();
 }
 
 int main( int argc, char* args[] ){
-	if( !init() ){
+    SDL_Window *window;
+    SDL_Renderer *renderer;
+    SDL_Event event;
+    SDL_Timer timer;
+
+    bool exit_flag = false;
+    double v = 30;
+    double dt;
+    std::vector<point> points;
+
+	if( !init(&renderer, &window) ){
         std::cout << "Failed to initialize!\n";
         return 0;
 	}
-    SDL_Event event;
-    SDL_Timer timer;
-    bool exit_flag = false;
-    double v = 0.1;
-    vector<point> points;
 
-
-    point A,B,C;
-    A.set_pos(300,100);
-    B.set_pos(100,400);
-    C.set_pos(500,400);
-    A.set_vel(-1*v/2, sqrt(3)*v/2);
-    B.set_vel(v,0);
-    C.set_vel(-1*v/2, -1*v/sqrt(2));
+    point A(300, 100, v, -1/2, sqrt(3)/2);
+    point B(100, 400, v, 1, 0);
+    point C(500, 400, v, -1/2, -1/sqrt(2));
     points.push_back(A);
     points.push_back(B);
     points.push_back(C);
@@ -148,16 +103,16 @@ int main( int argc, char* args[] ){
 
         timer.update();
         dt = timer.get_dt();
-        update_position(&points);
-        update_velocity(v, &points[0], &points[1]);
-        update_velocity(v, &points[1], &points[2]);
-        update_velocity(v, &points[2], &points[0]);
+        update_positions(&points, dt);
+        update_vhats(&points[0], &points[1]);
+        update_vhats(&points[1], &points[2]);
+        update_vhats(&points[2], &points[0]);
         draw_points(renderer, &points);
 
         SDL_RenderPresent( renderer );
     }
 
-    exit();
+    exit(&renderer, &window);
 
 	return 0;
 }

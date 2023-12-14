@@ -19,7 +19,7 @@ else
 	X  =  
 endif
 
-EXTLIBS += -lSDL2main -lSDL2 -lSDL2_ttf
+EXTLIBS += -lSDL2main -lSDL2# -lSDL2_ttf
 
 all: $(BINARY)
 
