@@ -1,6 +1,12 @@
 #ifndef drawing_guard
 #define drawing_guard
 
+#define PI 3.14159265358979323846264
+
+#include <cmath>
+#include <iostream>
+#include <cassert>
+
 static int SDL_RenderDrawDot(SDL_Renderer *renderer, int x, int y, int radius){
     int offsetx, offsety, d;
     int status;
@@ -41,4 +47,10 @@ static int SDL_RenderDrawDot(SDL_Renderer *renderer, int x, int y, int radius){
 
     return status;
 }
+
+//FIXME: dont know why this doesnt work
+static void SDL_DrawWrap(SDL_Renderer *renderer){
+    SDL_RenderDrawDot(renderer, 300, 300, 4);
+}
+
 #endif

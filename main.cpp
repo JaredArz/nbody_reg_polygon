@@ -5,7 +5,6 @@
 #include "point.h"
 #include "manager.h"
 
-#define PI 3.14159265358979323846264
 
 void update_vhats(Point *current, Point *next){
     double r_x = next->x - current->x;
@@ -37,11 +36,15 @@ int main( int argc, char* args[] ){
         }
         mgr.clear_renderer();
 
+        mgr.draw_polygon(6, 100);
+
+        /*
         mgr.update_positions();
         update_vhats(&mgr[0], &mgr[1]);
         update_vhats(&mgr[1], &mgr[2]);
         update_vhats(&mgr[2], &mgr[0]);
         mgr.draw_points();
+        */
 
         mgr.update_renderer();
     }
