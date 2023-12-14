@@ -1,8 +1,5 @@
-#ifndef useful_guard
-#define useful_guard
-#include <cmath>
-
-double norm(const double a, const double b){ return sqrt( a*a + b*b ); }
+#ifndef drawing_guard
+#define drawing_guard
 
 int SDL_RenderDrawDot(SDL_Renderer *renderer, int x, int y, int radius){
     int offsetx, offsety, d;

@@ -3,24 +3,24 @@
 #include <iostream>
 #include <cmath>
 #include <cassert>
-#include "useful_functions.h"
+#include "helper_funcs.h"
 
-class point{
+class Point{
     public:
         double x,y;
         double v, vhat_x, vhat_y;
 
-        point(){ 
+        Point(){ 
             this->x = this->y = 0;
             this->v = this->vhat_x = this->vhat_y = 0;
         };
 
-        point(double x, double y){ 
+        Point(double x, double y){ 
             this->x = x; this->y = y;
             this->v = this->vhat_x = this->vhat_y = 0;
         };
 
-        point(double x, double y,
+        Point(double x, double y,
                 double v, double vhat_x, double vhat_y){ 
             this->x = x; this->y = y;
             this->v = v;
@@ -48,7 +48,7 @@ class point{
             this->y += this->v * this->vhat_y * dt;
         }
 
-        friend std::ostream& operator << (std::ostream &f, const point &p){
+        friend std::ostream& operator << (std::ostream &f, const Point &p){
             f << "⟨" << p.x << ", " << p.y << "⟩";
             f << ", in the ⟨" << p.vhat_x << ", " << p.vhat_y << "⟩ direction";
             return f;
