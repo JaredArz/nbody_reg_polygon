@@ -48,9 +48,4 @@ static int SDL_RenderDrawDot(SDL_Renderer *renderer, int x, int y, int radius){
     return status;
 }
 
-//FIXME: dont know why this doesnt work
-static void SDL_DrawWrap(SDL_Renderer *renderer){
-    SDL_RenderDrawDot(renderer, 300, 300, 4);
-}
-
 #endif

@@ -5,7 +5,6 @@
 #include "point.h"
 #include "manager.h"
 
-
 void update_vhats(Point *current, Point *next){
     double r_x = next->x - current->x;
     double r_y = next->y - current->y;
@@ -23,12 +22,8 @@ int main( int argc, char* args[] ){
     bool exit_flag = false;
     double v = 30;
 
-    Point A(300, 100, v, -1/2, sqrt(3)/2);
-    Point B(100, 400, v, 1, 0);
-    Point C(500, 400, v, -1/2, -1/sqrt(2));
-    mgr.add_point(A);
-    mgr.add_point(B);
-    mgr.add_point(C);
+    mgr.gen_regular_polygon(100, 300);
+    mgr.set_velocity(v);
 
     while( !exit_flag ){
         while( SDL_PollEvent( &event ) != 0 ){
@@ -36,12 +31,9 @@ int main( int argc, char* args[] ){
         }
         mgr.clear_renderer();
 
-        //mgr.draw_polygon(6, 100);
-        mgr.gen_regular_polygon(6, 100);
+        //mgr.gen_regular_polygon(3, 250);
+        mgr.update_vhats();
         mgr.update_positions();
-        update_vhats(&mgr[0], &mgr[1]);
-        update_vhats(&mgr[1], &mgr[2]);
-        update_vhats(&mgr[2], &mgr[0]);
         mgr.draw_points();
 
         mgr.update_renderer();

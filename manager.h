@@ -2,6 +2,7 @@
 #define manager_guard
 #include <SDL2/SDL.h>
 
+#include <vector>
 #include "timer.h"
 #include "point.h"
 
@@ -27,11 +28,13 @@ class Manager{
 
         void add_point(Point p);
 
+        void update_vhats(void);
+
+        void set_velocity(double v);
+
         void draw_points(void);
 
         void draw_regular_polygon(unsigned int n, double L);
-
-        void draw_test();
 
         void gen_regular_polygon(unsigned int n, double L);
 

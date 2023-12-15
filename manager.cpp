@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <cassert>
 #include <iostream>
+#include <cmath>
 
 #include "manager.h"
 #include "timer.h"
@@ -10,8 +11,8 @@
 #define SCREEN_WIDTH  601
 #define SCREEN_HEIGHT 601
 #define POINT_RADIUS 4
-#define POINT_R 0
-#define POINT_G 0
+#define POINT_R 255
+#define POINT_G 255
 #define POINT_B 255
 #define POINT_A 0
 
@@ -70,6 +71,11 @@ void Manager::add_point(Point p){
     return;
 }
 
+void Manager::set_velocity(double v){
+    for (Manager::iter it = this->points.begin(); it < this->points.end(); it++)
+        it->v = v;
+}
+
 void Manager::draw_points(void){
     if (!this->SDL_flag)
         return;
@@ -106,7 +112,7 @@ void Manager::draw_regular_polygon(unsigned int n, double L){
         theta_0 = PI / (4 * (n-3));
 
     double theta_last = theta_0;
-    for(int i = 1; i <= n; i++){
+    for(unsigned int i = 1; i <= n; i++){
         double theta_i = theta_last + theta;
         double x_i = x_0 + L*sin(theta_i); 
         double y_i = y_0 - L*cos(theta_i); 
@@ -136,7 +142,7 @@ void Manager::gen_regular_polygon(unsigned int n, double L){
         theta_0 = PI / (4 * (n-3));
 
     double theta_last = theta_0;
-    for(int i = 1; i <= n; i++){
+    for(unsigned int i = 1; i <= n; i++){
         double theta_i = theta_last + theta;
         double x_i = x_0 + L*sin(theta_i); 
         double y_i = y_0 - L*cos(theta_i); 
@@ -147,20 +153,33 @@ void Manager::gen_regular_polygon(unsigned int n, double L){
     return;
 }
 
-void Manager::draw_test(void){
-    if (!this->SDL_flag)
-        return;
-
-    SDL_DrawWrap(this->renderer);
-    return;
-}
-
 void Manager::update_positions(void){
     // NOTE: timer updated here since pos is only time-dependent system
     this->timer.update();
     double dt = this->timer.get_dt();
     for (Manager::iter it = this->points.begin(); it < this->points.end(); it++)
         it->update_pos(dt);
+    return;
+}
+
+void Manager::update_vhats(){
+    double r_x, r_y, distance;
+    Manager::iter it;
+    for(it = this->points.begin(); it < this->points.end() - 1; it++){
+        r_x = (it+1)->x - it->x;
+        r_y = (it+1)->y - it->y;
+        distance = sqrt(((it+1)->x - it->x)*((it+1)->x - it->x) +
+                          (it->y - (it+1)->y)*(it->y - (it+1)->y));
+        it->vhat_x = r_x / distance;
+        it->vhat_y = r_y / distance;
+    }
+    Manager::iter start = this->points.begin();
+    r_x = start->x - it->x;
+    r_y = start->y - it->y;
+    distance = sqrt((start->x - it->x)*(start->x - it->x) +
+                      (it->y - start->y)*(it->y - start->y));
+    it->vhat_x = r_x / distance;
+    it->vhat_y = r_y / distance;
     return;
 }
 
