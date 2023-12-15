@@ -36,15 +36,13 @@ int main( int argc, char* args[] ){
         }
         mgr.clear_renderer();
 
-        mgr.draw_polygon(6, 100);
-
-        /*
+        //mgr.draw_polygon(6, 100);
+        mgr.gen_regular_polygon(6, 100);
         mgr.update_positions();
         update_vhats(&mgr[0], &mgr[1]);
         update_vhats(&mgr[1], &mgr[2]);
         update_vhats(&mgr[2], &mgr[0]);
         mgr.draw_points();
-        */
 
         mgr.update_renderer();
     }

@@ -29,9 +29,11 @@ class Manager{
 
         void draw_points(void);
 
-        void draw_polygon(unsigned int n, double L);
+        void draw_regular_polygon(unsigned int n, double L);
 
         void draw_test();
+
+        void gen_regular_polygon(unsigned int n, double L);
 
         void update_positions(void);
 

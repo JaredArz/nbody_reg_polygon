@@ -82,46 +82,8 @@ void Manager::draw_points(void){
     SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 0);
     return;
 }
-/*
-void Manager::draw_polygon(unsigned int n, double L){
-    if (!this->SDL_flag)
-        return;
 
-    assert( n >= 3 );
-
-    SDL_SetRenderDrawColor(this->renderer, POINT_R, POINT_G, POINT_B, POINT_A);
-
-    int w,h;
-    SDL_GetWindowSize(window, &w, &h);
-
-    double theta = 2*PI/n;
-    double theta_0;
-
-    if(n == 3)
-        theta_0 = 0;
-    else
-        theta_0 = PI / (4 * (n-3));
-    SDL_RenderDrawDot(this->renderer, w/2.f, h/2.f, POINT_RADIUS);
-    // Clock-wise
-    double x_0 = w/2.f + L*sin(theta_0); 
-    double y_0 = h/2.f - L*cos(theta_0);
-    SDL_RenderDrawDot(this->renderer, x_0, y_0, POINT_RADIUS);
-
-    double theta_last = theta_0;
-    for(int i = 1; i < n; i++){
-        double theta_i = theta_last + theta;
-        double x_i = w/2.f + L*sin(theta_i); 
-        double y_i = h/2.f - L*cos(theta_i); 
-        SDL_RenderDrawDot(this->renderer, x_i, y_i, POINT_RADIUS);
-        theta_last = theta_i;
-    }
-
-    SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 0);
-    return;
-}
-*/
-
-void Manager::draw_polygon(unsigned int n, double L){
+void Manager::draw_regular_polygon(unsigned int n, double L){
     if (!this->SDL_flag)
         return;
 
@@ -153,6 +115,35 @@ void Manager::draw_polygon(unsigned int n, double L){
     }
 
     SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 0);
+    return;
+}
+
+void Manager::gen_regular_polygon(unsigned int n, double L){
+    assert( n >= 3 );
+
+    int w,h;
+    SDL_GetWindowSize(window, &w, &h);
+
+    double x_0 = w/2.f;
+    double y_0 = h/2.f;
+
+    double theta = 2*PI/n;
+    double theta_0;
+
+    if(n == 3)
+        theta_0 = 0;
+    else
+        theta_0 = PI / (4 * (n-3));
+
+    double theta_last = theta_0;
+    for(int i = 1; i <= n; i++){
+        double theta_i = theta_last + theta;
+        double x_i = x_0 + L*sin(theta_i); 
+        double y_i = y_0 - L*cos(theta_i); 
+        this->points.push_back(Point(x_i,y_i));
+        theta_last = theta_i;
+    }
+
     return;
 }
 
